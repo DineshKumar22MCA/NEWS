@@ -12,7 +12,7 @@ from app import models,schemas,crud,database
 from sqlalchemy import or_
 # news_app import files
 from news_app.models import News 
-from pydantic import BaseModel
+from pydantic import BaseModel , Field
 from datetime import datetime
 from collections import defaultdict
 
@@ -33,19 +33,19 @@ def get_db():
         db.close()
 
 
-@app.post("/queries/",response_model=schemas.Query)
+@app.post("/create_query/",response_model=schemas.Query)
 def create_query(query : schemas.QueryCreate , db:Session = Depends(get_db)):
     return crud.create_query(db=db , query=query)
 
 
-@app.get("/queries/", response_model=list[schemas.Query])
+@app.get("/get_all_queries/", response_model=list[schemas.Query])
 def read_queries(skip: int=0, limit: int=100, db : Session =Depends(get_db)):
     queries = crud.get_queries(db=db , skip=skip, limit=limit)
     return queries
 
 
 
-@app.get("/queries/{query_id}", response_model=schemas.Query)
+@app.get("/get_query_by_id/{query_id}", response_model=schemas.Query)
 def read_query(query_id: int , db : Session = Depends(get_db)):
     db_query = crud.get_query(db=db , query_id = query_id)
 
@@ -82,7 +82,7 @@ def delete_query(query_id : int , db :Session =Depends(get_db)):
 class NewsBase(BaseModel):
     news_id : int
     title : str
-    description : str
+    description : str = Field(default="No description available") 
     url : str
     query_name : str
     publishedAt : datetime

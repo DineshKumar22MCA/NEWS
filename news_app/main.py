@@ -99,7 +99,6 @@
 
 # get  news without duplicate
 
-
 from news_app import fetch_queries
 from news_app import news_api
 import requests
@@ -107,64 +106,88 @@ from datetime import datetime
 from news_app.models import News
 from news_app.database import SessionLocal
 from dateutil import parser
+# from news_app.celery.celery_worker import celery_app
 
-query_data = fetch_queries.fetch_and_print_queries()
+from news_app.celery.celery_app import celery_app
 
-print(type(query_data))
+@celery_app.task
+def fetch_news_task():
+    try:
+        query_data = fetch_queries.fetch_and_print_queries()
 
-for i in query_data:
-    query_id = i["query_id"] 
-    query_name = i["query_name"]
-    print("==============================")
-    print(query_name)
+        print(type(query_data))
 
-    articles = news_api.fetch_everything_news(query_name) 
+        for i in query_data:
+            query_id = i["query_id"] 
+            query_name = i["query_name"]
+            print("==============================")
+            print(query_name)
 
-    for idx, article in enumerate(articles[:5], start=1):
-        title = article.get("title", "No title Available")
-        description = article.get("description", "No Description Available")
-        url = article.get("url", "No URL Available")
-        publishedAt = article.get("publishedAt", "No data Available")
-        storedAt = datetime.now()
+            articles = news_api.fetch_everything_news(query_name) 
 
-        if publishedAt != "No data Available":
-            publishedAt = parser.parse(publishedAt)
+            for idx, article in enumerate(articles[:5], start=1):
+                title = article.get("title", "No title Available")
+                description = article.get("description", "No Description Available")
+                url = article.get("url", "No URL Available")
+                publishedAt = article.get("publishedAt", "No data Available")
+                storedAt = datetime.now()
 
-        db = SessionLocal()
+                if publishedAt != "No data Available":
+                    publishedAt = parser.parse(publishedAt)
 
-        try:
-            existing_news = db.query(News).filter(News.title == title).first()
-            if existing_news:
-                print(f"Duplicate news detected: {title}. Skipping.")
-                continue
+                db = SessionLocal()
 
-            news_entry = News(
-                title=title,
-                description=description,
-                url=url,
-                query_name=query_name,
-                publishedAt=publishedAt,
-                storedAt=storedAt,
-                query_id=query_id
-            )
-            db.add(news_entry)
-            db.commit()
-            print(query_name, "news added")
-        except Exception as e:
-            print(f"Error: {e}")
-            db.rollback()
-        finally:
-            db.close()
+                try:
+                    existing_news = db.query(News).filter(News.title == title).first()
+                    print(f"***************{existing_news}*********************")
 
-        print("_________________________________")
-        print(f"Title: {title}")
-        print(f"Description: {description}")
-        print(f"URL: {url}")
-        print(f"Query Name: {query_name}")
-        print(f"Published At: {publishedAt}")
-        print(f"Stored At: {storedAt}")
-        print(f"Query ID: {query_id}")
+                    if existing_news:
+                        print(f"Duplicate news detected: {title}. Skipping.")
+                        # news_entry = News(
+                        #     title="Dummy Title for Testing",  
+                        #     description="This is a dummy description for testing ",  # Dummy description
+                        #     url="https://dummyurl.com",  
+                        #     publishedAt=datetime.now(),
+                        #     storedAt=storedAt,
+                        #     query_id=query_id
+                        # )
+                        # db.add(news_entry)
+                        # db.commit()
+                        # print("dummy record saved")
+                        continue
+                    else:
+                        news_entry = News(
+                            title=title,
+                            description=description,
+                            url=url,
+                            query_name=query_name,
+                            publishedAt=publishedAt,
+                            storedAt=storedAt,
+                            query_id=query_id
+                        )
+                        db.add(news_entry)
+                        db.commit()
+                        print(query_name, "news added")
+                except Exception as e:
+                    print(f"Error: {e}")
+                    db.rollback()
+                finally:
+                    db.close()
 
-print("All data inserted successfully")
+                    print("_________________________________")
+                    print(f"Title: {title}")
+                    print(f"Description: {description}")
+                    print(f"URL: {url}")
+                    print(f"Query Name: {query_name}")
+                    print(f"Published At: {publishedAt}")
+                    print(f"Stored At: {storedAt}")
+                    print(f"Query ID: {query_id}")
 
-    
+        print("All data inserted successfully")
+    except Exception as e:
+        print(e)
+
+
+
+
+# fetch_news_task()
