@@ -12,8 +12,8 @@ class QueryCreate(QueryBase):
 class Query(QueryBase):
     query_id : int 
 
-    class Config:
-        orm_mode = True
+    # class Config:
+    #     orm_mode = True
 
 
 

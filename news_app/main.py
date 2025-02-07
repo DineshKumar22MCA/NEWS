@@ -124,7 +124,7 @@ def fetch_news_task():
             print(query_name)
 
             articles = news_api.fetch_everything_news(query_name) 
-
+            print(len(articles))
             for idx, article in enumerate(articles[:5], start=1):
                 title = article.get("title", "No title Available")
                 description = article.get("description", "No Description Available")

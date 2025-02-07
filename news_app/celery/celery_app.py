@@ -1,8 +1,19 @@
 
 
 from celery import Celery
+import os 
 
-celery_app = Celery('news_app', broker='redis://localhost:6379/0')
+# $env:REDIS_BROKER_URL = "redis://localhost:6379/0" -pwsl
+# set REDIS_BROKER_URL=redis://localhost:6379/0 -cmd
+
+
+
+broker_url = os.getenv("REDIS_BROKER_URL","redis://localhost:6379/0")
+
+# celery_app = Celery('news_app', broker='redis://redis:6379/0')
+celery_app = Celery("news_tasks", broker=broker_url, backend=broker_url)
+
+
 celery_app.autodiscover_tasks(packages=["news_app"],related_name="main")
 celery_app.conf.timezone = 'UTC'
 
@@ -12,6 +23,6 @@ celery_app.conf.timezone = 'UTC'
 celery_app.conf.beat_schedule = {
     'fetch_news_every_5_minutes': {
         'task': 'news_app.main.fetch_news_task', 
-        'schedule': 5.0, 
+        'schedule': 60.0, 
     },
 }

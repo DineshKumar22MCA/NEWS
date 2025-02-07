@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_app
+    ports:
+      - "8000:80"   # Maps host port 8000 to container port 80
+    depends_on:
+      - mysql
+      - redis
+    environment: 
+      DATABASE_HOST: mysql
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_NAME: mydb
+    
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: celery_worker
+    command: python -m celery -A news_app.celery.celery_worker worker --pool=solo -l info
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      DATABASE_HOST: mysql
+      REDIS_BROKER_URL: redis://redis:6379/0
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: celery_beat
+    command: python -m celery -A news_app.celery.celery_worker beat --loglevel=info
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      DATABASE_HOST: mysql
+      REDIS_BROKER_URL: redis://redis:6379/0
+
+  mysql:
+    image: mysql:8
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydb
+    ports:
+      - "3307:3306"  # Maps container port 3306 to host port 3307 
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:latest
+    container_name: redis_db
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql_data: 
