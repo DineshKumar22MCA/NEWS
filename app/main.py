@@ -33,6 +33,7 @@ def get_db():
         db.close()
 
 
+
 @app.post("/create_query/",response_model=schemas.Query)
 def create_query(query : schemas.QueryCreate , db:Session = Depends(get_db)):
     return crud.create_query(db=db , query=query)
@@ -41,7 +42,7 @@ def create_query(query : schemas.QueryCreate , db:Session = Depends(get_db)):
 @app.get("/get_all_queries/", response_model=list[schemas.Query])
 def read_queries(skip: int=0, limit: int=100, db : Session =Depends(get_db)):
     queries = crud.get_queries(db=db , skip=skip, limit=limit)
-    return queries
+    return queries 
 
 
 

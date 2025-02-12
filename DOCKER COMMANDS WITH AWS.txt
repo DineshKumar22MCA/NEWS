@@ -1,0 +1,258 @@
+docker container prune - remove all containers
+
+docker ps - show containers
+docker ps -a - show stoped containers with running
+
+docker stop conname - stop con
+docker rm conname - - stop running stoped container
+
+docker images - show images
+
+docker image <image> - show image 1 with  detail
+
+docker image prune -a -f - delete all images 
+
+docker rmi <image_id_or_repository:tag>
+
+docker build -t <news_doc> . -create images for all
+
+docker ps -a
+
+docker stop container-name -stop container
+
+docker rm container-name --stop detached container 	 
+
+docker image prune -a -f -- force delete images all
+
+docker stop $(docker ps -aq) --stop all cons one cmd
+-----------
+network:
+
+docker network create "network_name" -create
+docker network ls		 - read
+docker network rm "network name"  -drop
+
+__________________________________
+
+pull MySQL :
+
+docker pull mysql:8
+
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -e MYSQL_USER=myuser -e MYSQL_PASSWORD=mypassword -p 3306 -d mysql:8
+
+2.
+docker run --name MySQL -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -p 3307:3306 -d mysql:8
+docker run --name MySQL -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -p 3307:3306 -it mysql:8
+
+
+
+yml
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydb
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+
+stop MySQL:
+docker ps -a
+docker ps
+docker stop MySQL
+docker rm MySQL
+
+docker rm $(docker ps -aq) --stop all running cons
+
+__________________________________
+
+pull redis :
+
+docker pull redis:latest
+
+docker run --name redis -p 6379:6379 -d redis:latest
+
+
+
+--------------------
+
+
+run a program
+
+docker network create my_network
+
+docker run --network my_network --name mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -p 3307:3306 -d mysql:8
+
+docker run --network my_network --name redis -p 6379:6379 -d redis:latest
+
+docker network ls
+
+docker rm -f fastapi
+
+docker inspect my_network
+
+
+
+
+
+
+
+
+
+_______________________________
+get sh
+docker run --network my_network --rm -it alpine /bin/sh
+
+apk update
+apk add iputils
+apk add bind-tools
+ping mysql
+
+------------
+
+news gathering project 
+create image:
+docker pull redis:latest
+docker pull MySQL:8
+docker build -t fastapi .
+
+run as container:
+docker network create news
+docker network ls
+docker run --network news --name MySQL -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -p 3306 MySQL:8
+docker run --network news --name redis -p 6379:6379 redis:latest
+
+docker run --network news --name fastapi -p 8000:80 -e DATABASE_HOST=mysql -e MYSQL_USER=user -e DATABASE_PASSWORD=root -e DATABASE_NAME=mydb -e REDIS_BROKER_URL=redis://redis:6379/0 fastapi
+(-p 3306:3306 (optional) )
+
+docker run --network news --name celery_worker -e DATABASE_HOST=mysql -e FASTAPI_HOST=fastapi -e FASTAPI_PORT=80 -e REDIS_BROKER_URL=redis://redis:6379/0 fastapi python -m celery -A news_app.celery.celery_app worker --pool=solo -l info
+
+docker run --network news --name celery_beat -e DATABASE_HOST=mysql -e FASTAPI_HOST=fastapi -e FASTAPI_PORT=80 -e REDIS_BROKER_URL=redis://redis:6379/0 fastapi python -m celery -A news_app.celery.celery_app beat --loglevel=info  
+
+
+
+
+
+
+
+
+
+_______________________________________________________________________
+
+remove authentication:
+icacls "D:\SANTA FE\fastapi_crud\news server key.pem" /remove "NT AUTHORITY\Authenticated Users"
+
+icacls "D:\SANTA FE\fastapi_crud\news server key.pem" /grant:r "Dinesh:(R)"
+
+ssh -i "D:\SANTA FE\fastapi_crud\news server key.pem" ec2-user@16.171.15.216
+
+or
+
+icacls "D:\SANTA FE\fastapi_crud\news server key.pem" /remove "BUILTIN\Users"
+
+icacls "D:\SANTA FE\fastapi_crud\news server key.pem" /inheritance:r
+
+icacls "D:\SANTA FE\fastapi_crud\news server key.pem" /grant:r "Dinesh:(R)"
+
+ssh -i "D:\SANTA FE\fastapi_crud\news server key.pem" ec2-user@16.171.15.216
+output:
+   ,     #_
+   ~\_  ####_        Amazon Linux 2023
+  ~~  \_#####\
+  ~~     \###|
+  ~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
+   ~~       V~' '->
+    ~~~         /
+      ~~._.   _/
+         _/ _/
+       _/m/'
+
+Last login: Sat Feb  8 07:20:21 2025 from 13.48.4.203
+
+ifconfig
+
+
+
+
+
+sudo yum update -y
+sudo yum install docker -y
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker ec2-user
+
+
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+
+sudo yum install git -y
+git --version
+git clone https://github.com/DineshKumar22MCA/NEWS.git news-server
+
+
+sudo lsof -i :6379 -find redis running
+
+redis-cli -h 127.0.0.1 -p 6379 ping    
+PONG
+
+sudo docker-compose up -build 
+-----------------------
+
+route server
+
+after run all container 
+
+create new ec2 
+
+mkdir route server
+ls
+cd route server
+
+sudo yum update -y
+sudo yum install nginx -y
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+sudo nano /etc/nginx/sites-available/news_server.conf
+
+server {
+    listen 80;
+    server_name <ROUTE_SERVER_PUBLIC_IP>;  # You can also use a domain name if you have one
+
+    location / {
+        proxy_pass http://<NEWS_SERVER_PRIVATE_IP>:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+
+server{
+        listen 80;
+        server_name 16.171.4.221;
+        location /news/{
+                proxy_pass http://16.170.215.188:8000/;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+}
+}                                      
+
+sudo nginx -t
+
+sudo systemctl reload nginx
+
+ curl -v http://127.0.0.1/
+
+
+
+

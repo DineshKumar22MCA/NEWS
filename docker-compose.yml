@@ -6,7 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: fastapi_app
-    ports:
+    restart: always 
+    ports: 
       - "8000:80"   # Maps host port 8000 to container port 80
     depends_on:
       - mysql
