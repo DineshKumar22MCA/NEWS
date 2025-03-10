@@ -11,6 +11,9 @@ __pycache__/
 *.log
 .env
 
+app/__pycache__
+news_app/__pycache__
+
 
 # Celery
 celerybeat-schedule.bak
