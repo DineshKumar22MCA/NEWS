@@ -2,17 +2,19 @@
 # monkey_patch()
 
 from celery import Celery
+from dotenv import load_dotenv
 import os 
 
 # $env:REDIS_BROKER_URL = "redis://localhost:6379/0" -pwsl
 # set REDIS_BROKER_URL=redis://localhost:6379/0 -cmd
 
 
+dotenv_path = os.path.join(os.path.dirname(__file__), "../env/.redis")
+load_dotenv(dotenv_path)
 
-broker_url = os.getenv("REDIS_BROKER_URL","redis://localhost:6379/0")
+REDIS_BROKER_URL = os.getenv("REDIS_BROKER_URL","redis://localhost:6379/0")
 
-# celery_app = Celery('news_app', broker='redis://redis:6379/0')
-celery_app = Celery("news_tasks", broker=broker_url, backend=broker_url, broker_connection_retry_on_startup=True)
+celery_app = Celery("news_tasks", broker=REDIS_BROKER_URL, backend=REDIS_BROKER_URL, broker_connection_retry_on_startup=True)
 
 
 celery_app.autodiscover_tasks(packages=["news_app"],related_name="main")

@@ -1,11 +1,15 @@
-import asyncio
 import requests
+import os
+from dotenv import load_dotenv
 
-API_KEY = "290978ff3a40fb0311d7263133c607a0"
-BASE_URL = "https://gnews.io/api/v4/search" 
+dotenv_path = os.path.join(os.path.dirname(__file__),"../env/.search")
+load_dotenv(dotenv_path)
 
-API_KEY2 = "cd2fb428a8a245d5957a6f9086c66a86"
-BASE_URL2 = "https://newsapi.org/v2/everything"
+GNEWS_API_KEY=os.getenv("GNEWS_API_KEY")
+NEWSAPI_API_KEY=os.getenv("NEWSAPI_API_KEY")
+
+GNEWS_BASE_URL=os.getenv("GNEWS_BASE_URL")
+NEWSAPI_BASE_URL=os.getenv("NEWSAPI_BASE_URL")
 
 
 def fetch_everything_news(query_name):
@@ -16,16 +20,17 @@ def fetch_everything_news(query_name):
         "q" : query_name,
         "lang" : language,
         "sortby": sort_by,
-        "token" : API_KEY
+        "token" : GNEWS_API_KEY
     }
     params2 = {
         "q": query_name,
         "language": language,
         "sortBy": sort_by,
-        "apiKey": API_KEY2
+        "apiKey": NEWSAPI_API_KEY
     }
     
-    response = requests.get(BASE_URL,params=params)
+    response = requests.get(GNEWS_BASE_URL,params=params)
+    # response = requests.get(NEWSAPI_BASE_URL,params=params2)
     data = response.json()
     
     if response.status_code==200:
