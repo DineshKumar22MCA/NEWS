@@ -36,19 +36,19 @@ def get_db():
 
 
 
-@app.post("/create_query/",response_model=schemas.Query)
+@app.post("/query",response_model=schemas.Query)
 def create_query(query : schemas.QueryCreate , db:Session = Depends(get_db)):
     return crud.create_query(db=db , query=query)
 
 
-@app.get("/get_all_queries/", response_model=list[schemas.Query])
+@app.get("/query", response_model=list[schemas.Query])
 def read_queries(skip: int=0, limit: int=100, db : Session =Depends(get_db)):
     queries = crud.get_queries(db=db , skip=skip, limit=limit)
     return queries 
 
 
 
-@app.get("/get_query_by_id/{query_id}", response_model=schemas.Query)
+@app.get("/query/{query_id}", response_model=schemas.Query)
 def read_query(query_id: int , db : Session = Depends(get_db)):
     db_query = crud.get_query(db=db , query_id = query_id)
 
@@ -57,7 +57,7 @@ def read_query(query_id: int , db : Session = Depends(get_db)):
     return db_query
 
 
-@app.put("/queries/{query_id}", response_model=schemas.Query)
+@app.put("/query/{query_id}", response_model=schemas.Query)
 def update_queries(query_id : int , query : schemas.QueryCreate , db : Session = Depends(get_db)):
     db_query = crud.update_query(db=db, query_id= query_id, query=query)
 
@@ -67,7 +67,7 @@ def update_queries(query_id : int , query : schemas.QueryCreate , db : Session =
 
 
 
-@app.delete("/queries/{query_id}", response_model=schemas.Query)
+@app.delete("/query/{query_id}", response_model=schemas.Query)
 def delete_query(query_id : int , db :Session =Depends(get_db)):
     db_query = crud.delete_query(db=db , query_id=query_id)
 
@@ -109,7 +109,7 @@ def get_news(db : Session = Depends(get_db)):
 
 
 # getting news dict of list of dict - py script
-@app.get("/getting_news_list_dict", response_model=dict[str, list[NewsBase]])
+@app.get("/news_list", response_model=dict[str, list[NewsBase]])
 def get_news_listdict(db: Session = Depends(get_db)):
     all_news = db.query(News).all()
 
