@@ -14,13 +14,16 @@ import os
        - container_id[mysql]: 3306 [ when run through compose file ]
        - ip_address_of_the_mysql_container:3306
 '''
+
 # DATABASE_URL = "mysql+pymysql://root:root@mysql:3307/mydb" #for doc
 
 # DATABASE_URL = "mysql+pymysql://root:root@localhost/mydb" #for local
 
+
 DATABASE_HOST = os.getenv("DATABASE_HOST","localhost")
-print(DATABASE_HOST)
-DATABASE_URL = f"mysql+pymysql://root:root@{DATABASE_HOST}/mydb"
+
+# DATABASE_URL = f"mysql+pymysql://root:root@{DATABASE_HOST}/mydb"
+DATABASE_URL = f"mysql+pymysql://wsl_root:password@172.29.16.1/mydb"
 
 engine = create_engine(DATABASE_URL)
 

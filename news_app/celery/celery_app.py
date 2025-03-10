@@ -1,4 +1,5 @@
-
+# from eventlet import monkey_patch
+# monkey_patch()
 
 from celery import Celery
 import os 
@@ -11,7 +12,7 @@ import os
 broker_url = os.getenv("REDIS_BROKER_URL","redis://localhost:6379/0")
 
 # celery_app = Celery('news_app', broker='redis://redis:6379/0')
-celery_app = Celery("news_tasks", broker=broker_url, backend=broker_url)
+celery_app = Celery("news_tasks", broker=broker_url, backend=broker_url, broker_connection_retry_on_startup=True)
 
 
 celery_app.autodiscover_tasks(packages=["news_app"],related_name="main")

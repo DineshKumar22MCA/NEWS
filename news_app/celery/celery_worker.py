@@ -1,4 +1,5 @@
-
+# from eventlet import monkey_patch
+# monkey_patch()
 
 # from celery import Celery
 # # from news_app.main import fetch_news_task
@@ -14,10 +15,8 @@
 #     },
 # }
 
-from news_app.celery.celery_app import celery_app  
+from . import celery_app  
 from news_app.main import fetch_news_task 
-
-
 
 if __name__ == '__main__':
     celery_app.start()

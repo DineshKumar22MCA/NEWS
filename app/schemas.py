@@ -1,6 +1,7 @@
 
 from pydantic import BaseModel
 # from datetime import datetime
+from pydantic import BaseModel, HttpUrl
 
 class QueryBase(BaseModel):
     query_name : str
@@ -16,6 +17,12 @@ class Query(QueryBase):
     #     orm_mode = True
 
 
+
+
+# class CallbackRequest(BaseModel):
+#     query_name: str
+#     callback_url: HttpUrl
+    
 
 # class NewsBase(BaseModel):
 #     title: str

@@ -34,7 +34,7 @@ docker network rm "network name"  -drop
 
 __________________________________
 
-pull MySQL :
+pull MySQL : 
 
 docker pull mysql:8
 
@@ -203,6 +203,8 @@ PONG
 
 sudo docker-compose up -build 
 -----------------------
+______________________________________________________________
+
 
 route server
 

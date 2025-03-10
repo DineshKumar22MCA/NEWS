@@ -1,8 +1,9 @@
 
 # fastapi
-from fastapi import FastAPI , Depends , HTTPException
-from fastapi import Query
+from fastapi import FastAPI , Depends , HTTPException ,Body ,requests
+from fastapi import Query , Request
 from typing import Optional
+from celery.result import AsyncResult
 # sqlalchemy
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -12,12 +13,13 @@ from app import models,schemas,crud,database
 from sqlalchemy import or_
 # news_app import files
 from news_app.models import News 
+
 from pydantic import BaseModel , Field
 from datetime import datetime
 from collections import defaultdict
-
-
-
+# from .schemas import *
+from fastapi.responses import JSONResponse
+from news_app.main import *
 
 models.Base.metadata.create_all(bind=database.engine)
 
@@ -102,7 +104,7 @@ def get_news(db : Session = Depends(get_db)):
     news_items = db.query(News).all()
     for item in news_items:
         print(item.news_id)
-    return news_items
+    return news_items 
 
 
 
@@ -122,63 +124,12 @@ def get_news_listdict(db: Session = Depends(get_db)):
 
 
 
-# not working endpoint
-# getting news like grouped news using sqlalchemy group function
-# @app.get("/getting_news_listdict_sqlalchemy", response_model=dict[str, list[NewsBase]])
-# def get_news_listdict_sqlalchemy(db: Session = Depends(get_db)):
-#     grouped_news = db.query(
-#         News.query_name, func.array_agg(News).label("news_list")
-#     ).group_by(News.query_name).all()
-
-#     listdict_news = {}
-
-#     for query_name, news_list in grouped_news:
-#         listdict_news[query_name] = news_list
-
-#     return listdict_news
-
-
-
-
-
-# working end point getting_news_list_dict
-# @app.get("/getting_news_list_dict", response_model=dict[str, list[NewsBase]])
-# def get_news_listdict(db: Session = Depends(get_db), query_name_filter: Optional[str] = None):
-#     query = db.query(News)
-    
-#     if query_name_filter:
-#         query = query.filter(News.query_name==query_name_filter)
-    
-#     all_news = query.all()
-    
-#     if not all_news:
-#         raise HTTPException(status_code=404, detail="No news found")
-    
-#     listdict_news = defaultdict(list)
-#     for i in all_news:
-#         listdict_news[i.query_name].append(i)
-
-#     return dict(listdict_news)
-
-
-
-
-
-
-
-
-
-
 @app.get("/news/{news_id}", response_model=NewsBase)
 def get_news_by_id(news_id : int,db : Session = Depends(get_db)):
     news1 = db.query(News).filter(News.news_id == news_id).first()
     if not news1:
         raise HTTPException(status_code=404 , detail="news not available")
     return news1
-
-
-
-
 
 
 
@@ -198,25 +149,44 @@ def search_news(search: Optional[str] = Query(None), db: Session = Depends(get_d
 
 
 
+class QueryRequest(BaseModel):
+    query_name: str
+    callback_url: str
 
-# working endpoint1
-# @app.get("/search_news", response_model=list[NewsBase])
-# def search_news(title: Optional[str] = None , description: Optional[str] = None, db: Session = Depends(get_db),):
-#     query = db.query(News)
-    
-#     if title:
-#         query = query.filter(News.title.ilike(f"%{title}%"))
-#     if description:
-#         query = query.filter(News.description.ilike(f"%{description}%"))
-    
-#     news_items = query.all()
-#     return news_items
 
+@app.post("/callback_news")
+async def callback(data: QueryRequest):
+    # await asyncio.sleep(1)
+    query_name = data.query_name
+    task =  callback_post.delay(query_name)
+    print(task)
+    return {"task id" : task.id, "query_name":query_name, "task status": task.status}
 
 
 
+@app.get("/callback_url_status/{task_id}")
+async def callback_status(task_id : str):
+    task = AsyncResult(task_id)
+    task_status = task.status
+    task_state = task.state
+    print(task_state,task_status)
+    return {"task status :":task_status, "task state : ": task_state }
 
 
+@app.get("/callback_result/{task_id}")
+async def callback_result(task_id: str):
+    task_result = AsyncResult(task_id)
+
+    if task_result.state == "PENDING":
+        return {"task_id": task_id, "status": "PENDING", "message": "Task is still running"}
+
+    elif task_result.state == "SUCCESS":
+        return {"task_id": task_id, "status": "SUCCESS", "result": task_result.result}
+
+    elif task_result.state == "FAILURE":
+        return {"task_id": task_id, "status": "FAILURE", "error": str(task_result.result)}
+
+    return {"task_id": task_id, "status": task_result.state}
 
 
 

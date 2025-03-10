@@ -8,7 +8,7 @@ def create_query(db:Session , query : schemas.QueryCreate):
     db.add(db_query)
     db.commit()
     db.refresh(db_query)
-    return db_query
+    return db_query 
 
 
 def get_queries(db:Session , skip : int ,limit : int =100):
