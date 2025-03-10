@@ -10,3 +10,9 @@ __pycache__/
 # Ignore logs and environment variables
 *.log
 .env
+
+
+# Celery
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
