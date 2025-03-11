@@ -9,7 +9,7 @@ FASTAPI_HOST = os.getenv("FASTAPI_HOST", "127.0.0.1")
 FASTAPI_PORT = os.getenv("FASTAPI_PORT", "8000")
 
 
-BASE_URL = f"http://{FASTAPI_HOST}:{FASTAPI_PORT}/get_all_queries"
+BASE_URL = f"http://{FASTAPI_HOST}:{FASTAPI_PORT}/query/fetch_all_queries"
 
 
 def fetch_and_print_queries():

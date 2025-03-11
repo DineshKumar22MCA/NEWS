@@ -34,15 +34,16 @@ pip3 install -r requirements.txt
 - `/`: Not Found
 - `/docs`: Swagger UI for the API.
 - `/query`: Query for used to manipulating the queries.
-    - `POST` : Create a new query in the Query table.
-    - `GET` : Retrieve all queries from the Query table.
-    - `GET` : `/query/{query_id}` Retrieve a specific query by its query_id.
-    - `PUT` : `/query/{query_id}` Update the query name for the given query_id.
-    - `DELETE` : `/query/{query_id}` Delete the query from the table.
-- `/news` :  `GET` method , Retrieve all news as json format.
-- `/news_list` : `GET` method , Retrieve all news as grouped by query_name.
-- `/news/{news_id}` : `GET` method, Retrieve a specific news by its news_id.
-- `/search_news?=search="keys"` : `GET` method, Retrieve the news by searching keys.
+  - `POST` : `/query/create_query` Create a new query in the Query table.
+  - `GET` : `/query/fetch_all_queries` Retrieve all queries from the Query table.
+  - `GET` : `query/fetch_query_by_id/{query_id}` Retrieve a specific query by its query_id.
+  - `PUT` : `/query/update_query/{query_id}` Update the query name for the given query_id.
+  - `DELETE` : `/query/delete_query/{query_id}` Delete the query from the table.
+- `/news` : News for used to fetch the news.
+  - `GET` : `/news/all_news` Retrieve all news as json format.
+  - `GET` : `/news/news_list` Retrieve all news as grouped by query_name.
+  - `GET` : `/news/get_news_by_id/{news_id}` Retrieve a specific news by its news_id.
+  - `GET` : `/news/search_news` + `?search="key search"` Retrieve the news by searching keys.
 - `callback_news` : `POST` method,Send the query to Background process. If we post the query_name and callback_url ,it will return the task_id.
 - `/callback_url_status/{task_id}` : `GET` method, Retrieve  task status for given task_id.
 - `/callback_result/{task_id}` : `GET` method, Retrieve  task result for given task_id.

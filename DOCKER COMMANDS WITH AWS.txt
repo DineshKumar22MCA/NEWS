@@ -1,3 +1,6 @@
+System Design : `https://app.eraser.io/workspace/DzDOgqglDCPgwljPoPaZ`
+https://app.eraser.io/workspace/gkDBzD37uX2EuvD6ssJ3  --MAIN
+
 docker container prune - remove all containers
 
 docker ps - show containers

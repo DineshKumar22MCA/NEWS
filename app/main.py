@@ -36,19 +36,19 @@ def get_db():
 
 
 
-@app.post("/query",response_model=schemas.Query)
+@app.post("/query/create_query",response_model=schemas.Query)
 def create_query(query : schemas.QueryCreate , db:Session = Depends(get_db)):
     return crud.create_query(db=db , query=query)
 
 
-@app.get("/query", response_model=list[schemas.Query])
+@app.get("/query/fetch_all_queries", response_model=list[schemas.Query])
 def read_queries(skip: int=0, limit: int=100, db : Session =Depends(get_db)):
     queries = crud.get_queries(db=db , skip=skip, limit=limit)
     return queries 
 
 
 
-@app.get("/query/{query_id}", response_model=schemas.Query)
+@app.get("/query/fetch_query_by_id/{query_id}", response_model=schemas.Query)
 def read_query(query_id: int , db : Session = Depends(get_db)):
     db_query = crud.get_query(db=db , query_id = query_id)
 
@@ -57,7 +57,7 @@ def read_query(query_id: int , db : Session = Depends(get_db)):
     return db_query
 
 
-@app.put("/query/{query_id}", response_model=schemas.Query)
+@app.put("/query/update_query/{query_id}", response_model=schemas.Query)
 def update_queries(query_id : int , query : schemas.QueryCreate , db : Session = Depends(get_db)):
     db_query = crud.update_query(db=db, query_id= query_id, query=query)
 
@@ -67,7 +67,7 @@ def update_queries(query_id : int , query : schemas.QueryCreate , db : Session =
 
 
 
-@app.delete("/query/{query_id}", response_model=schemas.Query)
+@app.delete("/query/delete_query/{query_id}", response_model=schemas.Query)
 def delete_query(query_id : int , db :Session =Depends(get_db)):
     db_query = crud.delete_query(db=db , query_id=query_id)
 
@@ -99,7 +99,7 @@ class NewsBase(BaseModel):
 
 
 # working endpoint get all news list[{dict}] format
-@app.get("/news", response_model= list[NewsBase] )
+@app.get("/news/all_news", response_model= list[NewsBase] )
 def get_news(db : Session = Depends(get_db)):
     news_items = db.query(News).all()
     for item in news_items:
@@ -109,7 +109,7 @@ def get_news(db : Session = Depends(get_db)):
 
 
 # getting news dict of list of dict - py script
-@app.get("/news_list", response_model=dict[str, list[NewsBase]])
+@app.get("/news/news_list", response_model=dict[str, list[NewsBase]])
 def get_news_listdict(db: Session = Depends(get_db)):
     all_news = db.query(News).all()
 
@@ -124,7 +124,7 @@ def get_news_listdict(db: Session = Depends(get_db)):
 
 
 
-@app.get("/news/{news_id}", response_model=NewsBase)
+@app.get("/news/get_news_by_id/{news_id}", response_model=NewsBase)
 def get_news_by_id(news_id : int,db : Session = Depends(get_db)):
     news1 = db.query(News).filter(News.news_id == news_id).first()
     if not news1:
@@ -133,11 +133,9 @@ def get_news_by_id(news_id : int,db : Session = Depends(get_db)):
 
 
 
-@app.get("/search_news", response_model=list[NewsBase])
+@app.get("/news/search_news", response_model=list[NewsBase])
 def search_news(search: Optional[str] = Query(None), db: Session = Depends(get_db)):
     query = db.query(News)
-
-    print(query)
     if search:
         query = query.filter(
             (News.title.ilike(f"%{search}%")) | (News.description.ilike(f"%{search}%"))
