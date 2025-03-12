@@ -154,9 +154,10 @@ class QueryRequest(BaseModel):
 
 @app.post("/callback_news")
 async def callback(data: QueryRequest):
-    # await asyncio.sleep(1)
+    await asyncio.sleep(5)
     query_name = data.query_name
-    task =  callback_post.delay(query_name)
+    callback_url = data.callback_url
+    task =  callback_post.delay(query_name, callback_url)
     print(task)
     return {"task id" : task.id, "query_name":query_name, "task status": task.status}
 

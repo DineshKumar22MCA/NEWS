@@ -192,7 +192,7 @@ def fetch_news_task():
 # fetch_news_task()
 
 @celery_app.task 
-def callback_post(query_name: str):
+def callback_post(query_name: str, callback_url: str):
     print("---------------------------------------------------------")
     print(f"start====={query_name}")
     try:
@@ -216,6 +216,9 @@ def callback_post(query_name: str):
         time.sleep(15)
         print(f"end ===={query_name}")
         print("------------------------------------------------")
+        response = requests.post(callback_url, json=result)
+        response.raise_for_status() 
+        # return {"status": "success", "callback_response": response.json()}
         return result
     except Exception as e:
         print(f"Error in ask_anything_task: {e}")

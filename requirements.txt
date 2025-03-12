@@ -13,7 +13,11 @@ click-plugins==1.1.1
 click-repl==0.3.0
 colorama==0.4.6
 cryptography==44.0.0
+dnspython==2.7.0
+eventlet==0.39.1
+exceptiongroup==1.2.2
 fastapi==0.115.8
+gevent==24.11.1
 greenlet==3.1.1
 h11==0.14.0
 idna==3.10
@@ -24,6 +28,7 @@ pydantic==2.10.6
 pydantic_core==2.27.2
 PyMySQL==1.1.1
 python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
 redis==5.2.1
 requests==2.32.3
 six==1.17.0
@@ -36,3 +41,5 @@ urllib3==2.3.0
 uvicorn==0.34.0
 vine==5.1.0
 wcwidth==0.2.13
+zope.event==5.0
+zope.interface==7.2
