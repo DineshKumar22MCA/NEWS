@@ -75,3 +75,4 @@ python -m celery -A news_app.celery.celery_app beat --loglevel=info
 ```
 - Celery beat trigger the event five minutes once.
 - The server can be stopped by pressing `Ctrl + C`.
+![image alt](https://github.com/DineshKumar22MCA/NEWS/blob/main/system%20design.png?raw=true)
